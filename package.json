@@ -1,0 +1,27 @@
+{
+  "name": "eventr",
+  "version": "0.1.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start:dev": "nodemon ./index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dallashall/eventr.git"
+  },
+  "author": "dallas hall",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/dallashall/eventr/issues"
+  },
+  "homepage": "https://github.com/dallashall/eventr#readme",
+  "dependencies": {
+    "express": "^4.16.3",
+    "socket.io": "^2.0.4"
+  },
+  "devDependencies": {
+    "nodemon": "^1.17.2"
+  }
+}
