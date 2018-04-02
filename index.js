@@ -30,14 +30,15 @@ app.get('/', (req, res) => res.send('Hello!!'));
 
 io.on('connection', (socket) => {
   const { room, user } = socket.handshake.query;
-  console.log(`${user} connected to ${room}`);
+  console.log(user);
+  console.log(`${user.userName} connected to ${room}`);
   superState[room] = superState[room] || loadStore();
   const store = superState[room];
   socket.join(room);
   const userConnected = action('USER_CONNECTED', user);
   store.dispatch(userConnected);
   socket.emit('dispatchAction', userConnected);
-  socket.emit(`hydrateUser:${user}`, store.getState());
+  socket.emit(`hydrateUser:${user.id}`, store.getState());
 
   // Upload new store
   socket.on('upload', (newState) => {
