@@ -56,7 +56,7 @@ io.on('connection', (socket) => {
   // Handle disconnect
   socket.on('disconnect', () => {
     console.log(`${user.userName} disconnected from ${room}`);
-    const userDisconnected = action('USER_DISCONNECTED', user);
+    const userDisconnected = action('REMOVE_USER', user);
     store.dispatch(userDisconnected);
     roomSocket.emit('action', userDisconnected);
   });
