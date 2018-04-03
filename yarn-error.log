@@ -21,8 +21,8 @@ npm manifest:
     "main": "index.js",
     "scripts": {
       "test": "echo \"Error: no test specified\" && exit 1",
-      "start:dev": "nodemon ./index.js",
-      "build": "babel ./ --out-dir dist/ --ignore ./node_modules,./.babelrc,./package.json,./npm-debug.log --copy-files"
+      "start:dev": "nodemon ./dist/index.js",
+      "build": "babel -w ./ --out-dir dist/ --ignore ./node_modules,./.babelrc,./package.json,./npm-debug.log,./dist --copy-files"
     },
     "repository": {
       "type": "git",
@@ -61,7 +61,7 @@ Trace:
   Error: Command failed.
   Exit code: 1
   Command: sh
-  Arguments: -c babel ./ --out-dir dist/ --ignore ./node_modules,./.babelrc,./package.json,./npm-debug.log --copy-files
+  Arguments: -c babel -w ./ --out-dir dist/ --ignore ./node_modules,./.babelrc,./package.json,./npm-debug.log,./dist --copy-files
   Directory: /Users/dallashall/personal/eventr
   Output:
   
