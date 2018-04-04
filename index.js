@@ -1,7 +1,15 @@
-import loadStore from './store';
-import action from './actions';
+import loadStore from './redux/store';
+import action from './redux/utils/action';
+import {
+  RECEIVE_USER,
+  REMOVE_USER,
+} from './redux/actions/users';
+import {
+  HYDRATE,
+} from './redux/actions/controls';
 
 const express = require('express');
+
 const app = express();
 const http = require('http').Server(app);
 const io = require('socket.io')(http);
@@ -37,15 +45,15 @@ io.on('connection', (socket) => {
   const store = superState[room];
   socket.join(room);
   const roomSocket = io.to(room);
-  const userConnected = action('RECEIVE_USER', user);
+  const userConnected = action(RECEIVE_USER, user);
   store.dispatch(userConnected);
   roomSocket.emit('action', userConnected);
-  socket.emit(`hydrateUser:${user.id}`, store.getState());
+  socket.emit(`hydrateUser:${user.id}`, action(HYDRATE, store.getState()));
 
   // Upload new store
   socket.on('upload', (newState) => {
     superState[room] = loadStore(newState);
-    roomSocket.emit('hydrate', newState);
+    roomSocket.emit('hydrate', action(HYDRATE, store.getState()));
   });
 
   socket.on('action', (userAction) => {
@@ -56,7 +64,7 @@ io.on('connection', (socket) => {
   // Handle disconnect
   socket.on('disconnect', () => {
     console.log(`${user.userName} disconnected from ${room}`);
-    const userDisconnected = action('REMOVE_USER', user);
+    const userDisconnected = action(REMOVE_USER, user);
     store.dispatch(userDisconnected);
     roomSocket.emit('action', userDisconnected);
   });
