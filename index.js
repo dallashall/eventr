@@ -17,6 +17,30 @@ const redisClient = redis.createClient({
   password: 'isThisOffensive?',
 });
 
+const get = function get(key) {
+  return new Promise((resolve, reject) => {
+    redisClient.get(key, (err, reply) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(JSON.parse(reply));
+      }
+    });
+  });
+};
+
+const set = function set(key, value) {
+  return new Promise((resolve, reject) => {
+    redisClient.set(key, JSON.stringify(value), (err, reply) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(reply);
+      }
+    });
+  });
+};
+
 const app = express();
 const http = require('http').Server(app);
 const io = require('socket.io')(http);
