@@ -8,7 +8,14 @@ import {
   HYDRATE,
 } from './redux/actions/controls';
 
+const redis = require('redis');
 const express = require('express');
+
+const redisClient = redis.createClient({
+  host: 'localhost',
+  port: 6000,
+  password: 'isThisOffensive?',
+});
 
 const app = express();
 const http = require('http').Server(app);
@@ -17,7 +24,7 @@ const io = require('socket.io')(http);
 
 const port = 8000;
 
-const superState = {};
+// const superState = {};
 
 app.get('/', (req, res) => res.send('Hello!!'));
 
@@ -37,36 +44,55 @@ app.get('/', (req, res) => res.send('Hello!!'));
 //     * Upon success, emit action to clients
 
 io.on('connection', (socket) => {
-  const { room, user } = JSON.parse(socket.handshake.query.payload);
   console.log(socket.handshake.query);
+  const { room, user } = JSON.parse(socket.handshake.query.payload);
   console.log(user);
   console.log(`${user.userName} connected to ${room}`);
-  superState[room] = superState[room] || loadStore();
-  const store = superState[room];
   socket.join(room);
   const roomSocket = io.to(room);
-  const userConnected = action(RECEIVE_USER, user);
-  store.dispatch(userConnected);
-  roomSocket.emit('action', userConnected);
-  socket.emit(`hydrateUser:${user.id}`, action(HYDRATE, store.getState()));
+  redisClient.get(room, (err, value) => {
+    console.log('stored value:', value);
+    const store = value ? loadStore(JSON.parse(value)) : loadStore();
+    const userConnected = action(RECEIVE_USER, user);
+    store.dispatch(userConnected);
+    redisClient.set(room, JSON.stringify(store.getState()), (err, ok) => {
+      if (ok) {
+        socket.to(room).emit('action', userConnected);
+        socket.emit(`hydrateUser:${user.id}`, action(HYDRATE, store.getState()));
+      }
+    });
+  });
 
   // Upload new store
   socket.on('upload', (newState) => {
-    superState[room] = loadStore(newState);
-    roomSocket.emit('hydrate', action(HYDRATE, store.getState()));
+    redisClient.set(room, JSON.stringify(newState), (err, ok) => {
+      if (ok) {
+        roomSocket.emit('hydrate', action(HYDRATE, newState));
+      }
+    });
   });
 
   socket.on('action', (userAction) => {
-    store.dispatch(userAction);
-    roomSocket.emit('action', userAction);
+    redisClient.get(room, (err, value) => {
+      const store = loadStore(JSON.parse(value));
+      store.dispatch(userAction);
+      redisClient.set(room, JSON.stringify(store.getState()), (err, ok) => {
+        if (ok) roomSocket.emit('action', userAction);
+      });
+    });
   });
 
   // Handle disconnect
   socket.on('disconnect', () => {
     console.log(`${user.userName} disconnected from ${room}`);
     const userDisconnected = action(REMOVE_USER, user);
-    store.dispatch(userDisconnected);
-    roomSocket.emit('action', userDisconnected);
+    redisClient.get(room, (err, value) => {
+      const store = loadStore(JSON.parse(value));
+      store.dispatch(userDisconnected);
+      redisClient.set(room, JSON.stringify(store.getState()), (err, ok) => {
+        if (ok) roomSocket.emit('action', userDisconnected);
+      });
+    });
   });
 });
 
