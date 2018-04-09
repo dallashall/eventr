@@ -1,10 +1,10 @@
-import { SET_CURRENT_STEP } from '../../actions/controls';
+const { SET_CURRENT_STEP } = require('../../actions/controls');
 
 const defaultState = {
-  currentCard: 0
+  currentCard: 0,
 };
 
-export default (controls = defaultState, { type, payload }) => {
+module.exports = (controls = defaultState, { type, payload }) => {
   switch (type) {
     case SET_CURRENT_STEP:
       return { ...controls, ...payload };

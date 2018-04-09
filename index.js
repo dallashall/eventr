@@ -1,26 +1,27 @@
-import redis from 'redis';
-import express from 'express';
-import http from 'http';
-import Server from 'socket.io';
+const redis = require('redis');
+const express = require('express');
+const http = require('http');
+const Server = require('socket.io');
+const redisAdapter = require('socket.io-redis');
 
-import {
+const {
   getRedis,
   setRedis,
   delRedis,
-} from './utils/redisPromise';
-import loadStore from './redux/store';
-import action from './redux/utils/action';
-import {
+} = require('./utils/redisPromise');
+const loadStore = require('./redux/store');
+const action = require('./redux/utils/action');
+const {
   RECEIVE_USER,
   REMOVE_USER,
-} from './redux/actions/users';
-import {
+} = require('./redux/actions/users');
+const {
   HYDRATE,
-} from './redux/actions/controls';
+} = require('./redux/actions/controls');
 
 const redisClient = redis.createClient({
-  host: 'localhost',
-  port: 6000,
+  host: 'redis',
+  port: 6379,
   password: 'isThisOffensive?',
 });
 
@@ -31,8 +32,13 @@ const del = delRedis(redisClient);
 const app = express();
 const httpServer = http.Server(app);
 const io = Server(httpServer);
+io.adapter(redisAdapter({
+  host: 'redis',
+  port: 6379,
+  password: 'isThisOffensive?',
+}));
 
-const port = 8000;
+const port = 5000;
 
 app.get('/', (req, res) => res.send('Hello!!'));
 
@@ -89,4 +95,4 @@ io.on('connection', (socket) => {
   });
 });
 
-httpServer.listen(port, () => console.log(`Listening on: ${port}`));
+httpServer.listen(port, '0.0.0.0', () => console.log(`Listening on: ${port}`));

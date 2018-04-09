@@ -1,8 +1,8 @@
-import { combineReducers } from 'redux';
-import entities from './entities';
-import controls from './controls';
+const { combineReducers } = require('redux');
+const entities = require('./entities');
+const controls = require('./controls');
 
-export default combineReducers({
+module.exports = combineReducers({
   entities,
   controls,
 });

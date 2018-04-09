@@ -1,4 +1,4 @@
-export const getRedis = redisClient => function get(key) {
+const getRedis = redisClient => function get(key) {
   return new Promise((resolve, reject) => {
     redisClient.get(key, (err, reply) => {
       if (err) return reject(err);
@@ -7,7 +7,7 @@ export const getRedis = redisClient => function get(key) {
   });
 };
 
-export const setRedis = redisClient => function set(key, value) {
+const setRedis = redisClient => function set(key, value) {
   return new Promise((resolve, reject) => {
     redisClient.set(key, JSON.stringify(value), (err, reply) => {
       if (err) return reject(err);
@@ -16,11 +16,17 @@ export const setRedis = redisClient => function set(key, value) {
   });
 };
 
-export const delRedis = redisClient => function del(key) {
+const delRedis = redisClient => function del(key) {
   return new Promise((resolve, reject) => {
     redisClient.del(key, (err, reply) => {
       if (err) return reject(err);
       return resolve(reply);
     });
   });
+};
+
+module.exports = {
+  getRedis,
+  setRedis,
+  delRedis,
 };

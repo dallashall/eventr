@@ -1,3 +1,9 @@
-export const RECEIVE_ROLE = 'RECEIVE_ROLE';
-export const REMOVE_ROLE = 'REMOVE_ROLE';
-export const REORDER_ROLES = 'REORDER_ROLES';
+const RECEIVE_ROLE = 'RECEIVE_ROLE';
+const REMOVE_ROLE = 'REMOVE_ROLE';
+const REORDER_ROLES = 'REORDER_ROLES';
+
+module.exports = {
+  RECEIVE_ROLE,
+  REMOVE_ROLE,
+  REORDER_ROLES,
+};

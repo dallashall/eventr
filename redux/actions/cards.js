@@ -1,3 +1,9 @@
-export const RECEIVE_CARD = 'RECEIVE_CARD';
-export const REMOVE_CARD = 'REMOVE_CARD';
-export const REORDER_CARDS = 'REORDER_CARDS';
+const RECEIVE_CARD = 'RECEIVE_CARD';
+const REMOVE_CARD = 'REMOVE_CARD';
+const REORDER_CARDS = 'REORDER_CARDS';
+
+module.exports = {
+  RECEIVE_CARD,
+  REMOVE_CARD,
+  REORDER_CARDS,
+};

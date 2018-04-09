@@ -1,10 +1,10 @@
-import { combineReducers } from 'redux';
-import cards from './cards';
-import roles from './roles';
-import steps from './steps';
-import users from './users';
+const { combineReducers } = require('redux');
+const cards = require('./cards');
+const roles = require('./roles');
+const steps = require('./steps');
+const users = require('./users');
 
-export default combineReducers({
+module.exports = combineReducers({
   cards,
   roles,
   steps,

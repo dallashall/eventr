@@ -1,4 +1,4 @@
-export default (type, payload) => ({
+module.exports = (type, payload) => ({
   type,
-  payload
+  payload,
 });

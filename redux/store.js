@@ -1,6 +1,6 @@
-import { createStore } from 'redux';
-import rootReducer from './reducers';
+const { createStore } = require('redux');
+const rootReducer = require('./reducers');
 
 const loadStore = (preloadedState = {}) => createStore(rootReducer, preloadedState);
 
-export default loadStore;
+module.exports = loadStore;

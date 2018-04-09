@@ -1,1 +1,1 @@
-export default (type, payload) => ({ type, payload });
+module.exports = (type, payload) => ({ type, payload });

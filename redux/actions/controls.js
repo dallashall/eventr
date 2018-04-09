@@ -1,6 +1,13 @@
-import action from '../utils/action';
+const action = require('../utils/action');
 
-export const SET_CURRENT_STEP = 'SET_CURRENT_STEP';
-export const HYDRATE = 'HYDRATE';
+const SET_CURRENT_STEP = 'SET_CURRENT_STEP';
+const HYDRATE = 'HYDRATE';
 
-export default controls => action(SET_CURRENT_STEP, controls);
+const controlAction = function controlAction(controls) {
+  return action(SET_CURRENT_STEP, controls);
+};
+
+controlAction.SET_CURRENT_STEP = SET_CURRENT_STEP;
+controlAction.HYDRATE = HYDRATE;
+
+module.exports = controlAction;
