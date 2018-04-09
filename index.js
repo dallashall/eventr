@@ -1,3 +1,13 @@
+import redis from 'redis';
+import express from 'express';
+import http from 'http';
+import Server from 'socket.io';
+
+import {
+  getRedis,
+  setRedis,
+  delRedis,
+} from './utils/redisPromise';
 import loadStore from './redux/store';
 import action from './redux/utils/action';
 import {
@@ -8,116 +18,75 @@ import {
   HYDRATE,
 } from './redux/actions/controls';
 
-const redis = require('redis');
-const express = require('express');
-
 const redisClient = redis.createClient({
   host: 'localhost',
   port: 6000,
   password: 'isThisOffensive?',
 });
 
-const get = function get(key) {
-  return new Promise((resolve, reject) => {
-    redisClient.get(key, (err, reply) => {
-      if (err) {
-        reject(err);
-      } else {
-        resolve(JSON.parse(reply));
-      }
-    });
-  });
-};
-
-const set = function set(key, value) {
-  return new Promise((resolve, reject) => {
-    redisClient.set(key, JSON.stringify(value), (err, reply) => {
-      if (err) {
-        reject(err);
-      } else {
-        resolve(reply);
-      }
-    });
-  });
-};
+const get = getRedis(redisClient);
+const set = setRedis(redisClient);
+const del = delRedis(redisClient);
 
 const app = express();
-const http = require('http').Server(app);
-const io = require('socket.io')(http);
-
+const httpServer = http.Server(app);
+const io = Server(httpServer);
 
 const port = 8000;
-
-// const superState = {};
 
 app.get('/', (req, res) => res.send('Hello!!'));
 
 // On new connection
-//   * Check if an existing store exists for the key
-//     * Create a new store for the key if necessary
+//   * Create a new store for the key if necessary
 //   * Dispatch an action that sets the user as active
-//     * Upon success, emit the action to clients
-//     * Reply with the hydrate action and the current state (after user has been set as active)
-
-// On action.type HYDRATE
-// * Replace exisiting store with a hydrated store
-//   * Upon success, emit the same action to clients
-
-// On disconnect
-//   * Dispatch action setting user as inactive
-//     * Upon success, emit action to clients
+//   * Reply with the hydrate action and the current state (after user has been set as active)
 
 io.on('connection', (socket) => {
-  console.log(socket.handshake.query);
   const { room, user } = JSON.parse(socket.handshake.query.payload);
-  console.log(user);
   console.log(`${user.userName} connected to ${room}`);
   socket.join(room);
+  const userConnected = action(RECEIVE_USER, user);
   const roomSocket = io.to(room);
-  redisClient.get(room, (err, value) => {
-    console.log('stored value:', value);
-    const store = value ? loadStore(JSON.parse(value)) : loadStore();
-    const userConnected = action(RECEIVE_USER, user);
+  const addAndHydrateUser = async function addAndHydrateUser() {
+    const initialState = await get(room);
+    const store = loadStore(initialState || {});
     store.dispatch(userConnected);
-    redisClient.set(room, JSON.stringify(store.getState()), (err, ok) => {
-      if (ok) {
-        socket.to(room).emit('action', userConnected);
-        socket.emit(`hydrateUser:${user.id}`, action(HYDRATE, store.getState()));
-      }
-    });
-  });
+    const ok = await set(room, store.getState());
+    if (ok) {
+      socket.to(room).emit('action', userConnected);
+      roomSocket.emit(`hydrateUser:${user.id}`, { type: HYDRATE, payload: store.getState() });
+    }
+  };
+  addAndHydrateUser();
+  const applyAction = async function applyAction(actionObj) {
+    const store = loadStore(await get(room));
+    store.dispatch(actionObj);
+    const ok = await set(room, store.getState());
+    if (ok) roomSocket.emit('action', actionObj);
+  };
 
   // Upload new store
-  socket.on('upload', (newState) => {
-    redisClient.set(room, JSON.stringify(newState), (err, ok) => {
-      if (ok) {
-        roomSocket.emit('hydrate', action(HYDRATE, newState));
-      }
-    });
+  socket.on('upload', async (newState) => {
+    const ok = await set(room, newState);
+    if (ok) roomSocket.emit('hydrate', action(HYDRATE, newState));
   });
 
-  socket.on('action', (userAction) => {
-    redisClient.get(room, (err, value) => {
-      const store = loadStore(JSON.parse(value));
-      store.dispatch(userAction);
-      redisClient.set(room, JSON.stringify(store.getState()), (err, ok) => {
-        if (ok) roomSocket.emit('action', userAction);
-      });
-    });
+  // Dispatch and distribute actions
+  socket.on('action', async (userAction) => {
+    applyAction(userAction);
   });
 
   // Handle disconnect
   socket.on('disconnect', () => {
     console.log(`${user.userName} disconnected from ${room}`);
     const userDisconnected = action(REMOVE_USER, user);
-    redisClient.get(room, (err, value) => {
-      const store = loadStore(JSON.parse(value));
-      store.dispatch(userDisconnected);
-      redisClient.set(room, JSON.stringify(store.getState()), (err, ok) => {
-        if (ok) roomSocket.emit('action', userDisconnected);
-      });
-    });
+    applyAction(userDisconnected);
+  });
+
+  socket.on('clear', async () => {
+    await del(room);
+    set(room, {});
   });
 });
 
-http.listen(port, () => console.log(`Listening on: ${port}`));
+httpServer.listen(port, () => console.log(`Listening on: ${port}`));
