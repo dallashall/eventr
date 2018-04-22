@@ -4,9 +4,11 @@ const roles = require('./roles');
 const steps = require('./steps');
 const users = require('./users');
 
-module.exports = combineReducers({
+const entitiesReducer = combineReducers({
   cards,
   roles,
   steps,
   users,
 });
+
+module.exports = entitiesReducer;

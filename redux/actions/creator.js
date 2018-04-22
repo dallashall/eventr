@@ -1,1 +1,2 @@
-module.exports = (type, payload) => ({ type, payload });
+const action = (type, payload) => ({ type, payload });
+module.exports = action;

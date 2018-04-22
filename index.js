@@ -19,24 +19,28 @@ const {
   HYDRATE,
 } = require('./redux/actions/controls');
 
-const redisClient = redis.createClient({
-  host: 'redis',
-  port: 6379,
-  password: 'isThisOffensive?',
-});
+const app = express();
+const httpServer = http.Server(app);
+const io = Server(httpServer);
+
+let redisClient;
+if (process.argv.indexOf('start') !== -1) {
+  redisClient = redis.createClient({
+    host: 'redis',
+    port: 6379,
+    password: 'isThisOffensive?',
+  });
+
+  io.adapter(redisAdapter({
+    host: 'redis',
+    port: 6379,
+    password: 'isThisOffensive?',
+  }));
+}
 
 const get = getRedis(redisClient);
 const set = setRedis(redisClient);
 const del = delRedis(redisClient);
-
-const app = express();
-const httpServer = http.Server(app);
-const io = Server(httpServer);
-io.adapter(redisAdapter({
-  host: 'redis',
-  port: 6379,
-  password: 'isThisOffensive?',
-}));
 
 const port = 5000;
 
@@ -95,4 +99,6 @@ io.on('connection', (socket) => {
   });
 });
 
-httpServer.listen(port, '0.0.0.0', () => console.log(`Listening on: ${port}`));
+if (process.argv.indexOf('start') !== -1) {
+  httpServer.listen(port, '0.0.0.0', () => console.log(`Listening on: ${port}`));
+}
