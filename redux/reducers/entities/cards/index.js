@@ -4,7 +4,9 @@ const defaultState = {
   ids: [],
 };
 
-module.exports = (state = defaultState, { type, payload }) => {
+const cardsReducer = (state = defaultState, { type, payload }) => {
   console.log({ type, payload });
   return state;
 };
+
+module.exports = cardsReducer;

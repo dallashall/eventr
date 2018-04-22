@@ -8,7 +8,7 @@ const defaultState = {
   ids: [],
 };
 
-module.exports = (users = defaultState, { type, payload }) => {
+const usersReducer = (users = defaultState, { type, payload }) => {
   switch (type) {
     case RECEIVE_USER:
       return {
@@ -27,3 +27,5 @@ module.exports = (users = defaultState, { type, payload }) => {
       return users;
   }
 };
+
+module.exports = usersReducer;

@@ -4,7 +4,7 @@ const defaultState = {
   currentCard: 0,
 };
 
-module.exports = (controls = defaultState, { type, payload }) => {
+const controlsReducer = (controls = defaultState, { type, payload }) => {
   switch (type) {
     case SET_CURRENT_STEP:
       return { ...controls, ...payload };
@@ -12,3 +12,5 @@ module.exports = (controls = defaultState, { type, payload }) => {
       return controls;
   }
 };
+
+module.exports = controlsReducer;
