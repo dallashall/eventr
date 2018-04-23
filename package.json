@@ -4,14 +4,15 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "jest --coverage",
+    "test": "jest",
+    "test:coverage": "jest --coverage",
     "start:dev": "nodemon ./index.js start",
     "start": "node ./index.js start"
   },
   "jest": {
-    "transform": {
-      "^.+\\.jsx?$": "babel-jest"
-    }
+    "verbose": true,
+    "testMatch": [ "**/?(*.)(spec|test).js?(x)" ],
+    "testEnvironment": "node"
   },
   "repository": {
     "type": "git",
