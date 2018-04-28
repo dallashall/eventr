@@ -4,7 +4,10 @@ const {
   REMOVE_USER,
   REORDER_USERS,
 } = require('../../../actions/users');
-const reorderArray = require('../../../utils/array');
+const {
+  reorderArray,
+  removeFromArray,
+} = require('../../../utils/array');
 
 const defaultState = {
   byId: {},
@@ -25,8 +28,7 @@ const usersReducer = (users = defaultState, { type, payload }) => {
         byId: { ...users.byId },
       };
       delete newUsers.byId[payload.id];
-      const idx = users.ids.indexOf(payload.id);
-      newUsers.ids = users.ids.slice(0, idx).concat(users.ids.slice(idx + 1));
+      newUsers.ids = removeFromArray(users.ids, payload.id);
       return newUsers;
     }
     case REORDER_USERS:

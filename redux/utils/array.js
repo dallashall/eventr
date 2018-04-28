@@ -4,4 +4,12 @@ const reorderArray = function reorderArray(array, originIndex, destinationIndex)
   return copy;
 };
 
-module.exports = reorderArray;
+const removeFromArray = function removeFromArray(array, value) {
+  const idx = array.indexOf(value);
+  return array.slice(0, idx).concat(array.slice(idx + 1));
+};
+
+module.exports = {
+  reorderArray,
+  removeFromArray,
+};
