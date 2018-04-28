@@ -1,7 +1,13 @@
 const {
+  RECEIVE_USERS,
   RECEIVE_USER,
   REMOVE_USER,
+  REORDER_USERS,
 } = require('../../../actions/users');
+const {
+  reorderArray,
+  removeFromArray,
+} = require('../../../utils/array');
 
 const defaultState = {
   byId: {},
@@ -10,6 +16,8 @@ const defaultState = {
 
 const usersReducer = (users = defaultState, { type, payload }) => {
   switch (type) {
+    case RECEIVE_USERS:
+      return { ...payload };
     case RECEIVE_USER:
       return {
         byId: { ...users.byId, [payload.id]: payload },
@@ -20,9 +28,14 @@ const usersReducer = (users = defaultState, { type, payload }) => {
         byId: { ...users.byId },
       };
       delete newUsers.byId[payload.id];
-      newUsers.ids = Object.keys(newUsers.byId);
+      newUsers.ids = removeFromArray(users.ids, payload.id);
       return newUsers;
     }
+    case REORDER_USERS:
+      return {
+        byId: { ...users.byId },
+        ids: reorderArray(users.ids, payload.prevIdx, payload.nextIdx),
+      };
     default:
       return users;
   }
