@@ -1,9 +1,9 @@
-const combination = require('../../../../redux/reducers/entities/index');
+const { blankTestStore } = require('../store');
+const entitiesReducer = require('../../../../redux/reducers/entities/index');
 
-describe.skip('index.js', () => {
-  test('combination', () => {
-    const condition = combination();
-    expect(condition);
+describe('index.js', () => {
+  test('entitiesReducer', () => {
+    const condition = entitiesReducer(blankTestStore.entities, { type: '@@INIT' });
+    expect(condition).toEqual(blankTestStore.entities);
   });
-
 });

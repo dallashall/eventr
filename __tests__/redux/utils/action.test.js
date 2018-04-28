@@ -1,11 +1,11 @@
 const action = require('../../../redux/utils/action');
 
-describe.skip('action.js', () => {
+describe('action.js', () => {
   test('action', () => {
-    const arg0 = {};
-    const arg1 = {};
-    const condition = action(arg0, arg1);
-    expect(condition);
+    const type = 'TYPE';
+    const payload = { test: 'object' };
+    const condition = action(type, payload);
+    expect(condition.type).toEqual(type);
+    expect(condition.payload).toEqual(payload);
   });
-
 });
