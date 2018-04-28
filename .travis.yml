@@ -3,6 +3,7 @@ node_js:
   - "node"
 install:
   - npm install
+script: "npm run test:ci"
 branches:
   only:
     - master
