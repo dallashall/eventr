@@ -6,12 +6,15 @@
   "scripts": {
     "test": "jest",
     "test:coverage": "jest --coverage",
+    "test:ci": "jest --coverage && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js",
     "start:dev": "nodemon ./index.js start",
     "start": "node ./index.js start"
   },
   "jest": {
     "verbose": true,
-    "testMatch": [ "**/?(*.)(spec|test).js?(x)" ],
+    "testMatch": [
+      "**/?(*.)(spec|test).js?(x)"
+    ],
     "testEnvironment": "node"
   },
   "repository": {
@@ -32,6 +35,7 @@
     "socket.io-redis": "^5.2.0"
   },
   "devDependencies": {
+    "coveralls": "^3.0.0",
     "jest": "^22.4.3",
     "nodemon": "^1.17.2",
     "regenerator-runtime": "^0.11.1",
