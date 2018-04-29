@@ -1,9 +1,12 @@
-const combination = require('../../../redux/reducers/index');
+const rootReducer = require('../../../redux/reducers/index');
+const {
+  blankTestStore,
+} = require('./store');
 
-describe.skip('index.js', () => {
-  test('combination', () => {
-    const condition = combination();
-    expect(condition);
+describe('index.js', () => {
+  test('init', () => {
+    const condition = rootReducer(undefined, { type: '@@INIT' });
+    expect(condition).toEqual(blankTestStore);
   });
 
 });

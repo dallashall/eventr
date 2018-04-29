@@ -12,7 +12,6 @@ const {
 const defaultState = {
   byId: {},
   ids: [],
-  current: null,
 };
 
 const stepsReducer = (steps = defaultState, { type, payload }) => {
