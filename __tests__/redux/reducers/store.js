@@ -19,7 +19,6 @@ const blankTestStore = {
   },
   controls: {
     currentCard: null,
-    nextCard: null,
   },
 };
 
